@@ -1,0 +1,162 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+import time
+from absl import app
+from absl import flags
+import collections
+from dm_control import mujoco
+from dm_control.rl import control
+from dm_control.suite import base
+from dm_control.suite import common
+from dm_control.suite.utils import randomizers
+from dm_control.utils import containers
+import scipy.io as sio
+import matplotlib.pyplot as plt
+import numpy as np
+_DEFAULT_TIME_LIMIT = 20
+_CONTROL_SUBSTEPS = 100
+CONVERSION_LENGTH = 1000
+fileName='.\\demos\\ratMocapImputedUnregistered'
+varName='markers_preproc'
+max_frame=29000
+start_frame=26500
+frame_step=10
+maxRenderTime = 10
+model_filename='rodent_mocap_tendon_default.xml'              
+def get_model_and_assets():
+    return common.read_model(model_filename), common.ASSETS
+
+class jeffRat(base.Task):
+    def __init__(self, random=None):
+        super(jeffRat, self).__init__(random=random)
+    def initialize_episode(self, physics):
+        penetrating = True
+        while penetrating:
+            randomizers.randomize_limited_and_rotational_joints(
+                physics, self.random)
+            physics.after_reset()
+            penetrating = physics.data.ncon > 0
+    def get_observation(self, physics):
+        obs = collections.OrderedDict()
+        obs['joint_angles'] = physics.joint_angles()
+        return obs
+    def mocap(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
+        physics = mujoco.Physics.from_xml_string(*get_model_and_assets())
+        task = jeffRat(random=random)
+        environment_kwargs = environment_kwargs or {}
+        return control.Environment(
+            physics, task, time_limit=time_limit, n_sub_steps=_CONTROL_SUBSTEPS,
+            **environment_kwargs)
+    def get_reward(self, physics):
+        return 0
+
+def parse(fileName, varName):
+    parsed = collections.namedtuple('parsed', ['marks', 'bods', 'medianPose', 'mocap_pos'])
+    marks = dict()
+    medianPose = dict()
+    zOffset = dict()
+    #zOffset = [0, 0, 999999]
+    values = sio.loadmat(fileName, variable_names = varName)
+    bods = list(values[varName].dtype.fields)
+    for bod in bods:
+        marks[bod] = values[varName][bod][0][0]/CONVERSION_LENGTH #ASSUMES .MAT TO BE IN MILLIMETERS
+        zOffset[bod] = np.amin(marks[bod], axis = 0) * [0, 0, 1]
+        #thisZ = np.amin(marks[bod], axis = 0) * [0, 0, 1]
+        #zOffset = [0, 0, min(zOffset[2], thisZ[2])]
+    for bod in bods:
+        marks[bod] -= zOffset[min(zOffset)]
+    for bod in bods:
+        if bod == bods[0]:
+            mocap_pos = marks[bod]
+        else:
+            mocap_pos = np.concatenate((mocap_pos, marks[bod]), axis = 1)
+        medianPose[bod] = np.median(marks[bod], axis = {0})
+    mocap_pos.shape = (mocap_pos.shape[0], int(mocap_pos.shape[1]/3), 3)
+    mocap_pos = forFillNan(mocap_pos)
+    return parsed(marks, bods, medianPose, mocap_pos)
+
+def forFillNan(arr):
+    for m in range(arr.shape[1]):
+        if any(np.isnan(arr[:, m, 1])):
+            ind = np.where(np.isnan(arr[:, m, 1])) #only works if all coordinates are NaNs    
+            for i in ind[0]:
+                if i == 0:
+                    arr[i, m, :] = [0, 0, 0]
+                else:
+                    arr[i, m, :] = arr[i - 1, m, :].copy()
+    return arr
+
+env = jeffRat.mocap()
+data = parse(fileName, varName)
+
+width = 500
+height = 500
+frame = np.zeros((1, height, width, 3), dtype=np.uint8)
+
+def showFrame(data, frame, env, i):
+    p_i = data.mocap_pos[i, :].copy()
+    with env.physics.reset_context():
+        env.physics.data.mocap_pos[:] = p_i
+    while (env.physics.time() < minRenderTime or any(abs(env.physics.data.qvel) > 1e-05) or np.nanmean(abs(env.physics.data.qvel)) > 1e-06
+        or any(abs(env.physics.data.qacc) > 1e-05) or np.nanmean(abs(env.physics.data.qacc)) > 1e-06) and env.physics.time() < maxRenderTime:
+        env.physics.step()
+    frame = np.hstack([env.physics.render(height, width, camera_id="front_side")])
+    img = plt.imshow(frame)
+    plt.waitforbuttonpress()
+    plt.close()
+
+def getFrame(data, env, i):
+    #p_i = data.mocap_pos[i, :].copy()
+    with env.physics.reset_context():
+        #env.physics.data.mocap_pos[:] = p_i
+        for bod, mark in data.marks.items(): env.physics.named.data.mocap_pos[bod] = mark[i].copy()
+    while (env.physics.time() < minRenderTime or any(abs(env.physics.data.qvel) > 1e-05) or np.nanmean(abs(env.physics.data.qvel)) > 1e-06
+        or any(abs(env.physics.data.qacc) > 1e-05) or np.nanmean(abs(env.physics.data.qacc)) > 1e-06) and env.physics.time() < maxRenderTime:
+        env.physics.step()
+    return np.hstack([env.physics.render(height, width, camera_id="front_side")]), env.physics.data.qpos[:] 
+    
+def getJoints(data, env, i):
+    #p_i = data.mocap_pos[i, :].copy()
+    with env.physics.reset_context():
+        #env.physics.data.mocap_pos[:] = p_i
+        for bod, mark in data.marks.items(): env.physics.named.data.mocap_pos[bod] = mark[i].copy()
+    while (env.physics.time() < minRenderTime or any(abs(env.physics.data.qvel) > 1e-05) or np.nanmean(abs(env.physics.data.qvel)) > 1e-06
+        or any(abs(env.physics.data.qacc) > 1e-05) or np.nanmean(abs(env.physics.data.qacc)) > 1e-06) and env.physics.time() < maxRenderTime:
+        env.physics.step()
+    return env.physics.data.qpos[:]
+
+max_frame = min(max_frame, data.mocap_pos.shape[0])
+max_num_frames = (max_frame - start_frame)//frame_step
+video = np.zeros((max_num_frames, height, width, 3), dtype=np.uint8)
+qVid = np.zeros((max_num_frames, env.physics.data.qpos.size), dtype=np.float64)
+
+
+
+for i in range(start_frame, max_frame, frame_step):
+    i1 = (i - start_frame)//frame_step 
+    qVid[i1] = getJoints(data, env, i)
+
+
+
+
+for i in range(start_frame, max_frame, frame_step):
+    i1 = (i - start_frame)//frame_step 
+    video[i1], qVid[i1] = getFrame(data, env, i)
+
+
+
+
+tic = time.time()
+for i in range(video.shape[0]):
+    if i == 0:
+        img = plt.imshow(video[i])
+        plt.waitforbuttonpress()
+    else:
+        img.set_data(video[i])
+    toc = time.time()
+    clock_dt = toc - tic
+    tic = time.time()
+    plt.pause(max(0.01, 0.03 - clock_dt))  # Need min display time > 0.0.
+    plt.draw()
+plt.waitforbuttonpress()

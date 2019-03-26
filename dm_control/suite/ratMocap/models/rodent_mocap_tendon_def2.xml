@@ -1,0 +1,283 @@
+<mujoco model="simple_rodent">
+  <include file="./common/skybox.xml"/>
+  <include file="./common/visual.xml"/>
+  <include file="./common/materials.xml"/>
+
+  <compiler angle="degree"/>
+  <statistic extent="0.25" center="0 0 0" meanmass="1" meaninertia="1"/>
+
+  <visual>
+    <global offheight='1000' offwidth='1000'/>
+  </visual>
+
+  <keyframe>
+    <key qpos='-0.0494968 0.00485671 0.0354287 -0.33323 0.315702 0.574387 0.677768 0.309315 0.104031 0.129873 -0.055938 -0.0370653 -0.0200894 0.0466742 0.0348514 -0.110522 0.158882 -0.174582 -0.0584494 0.0594166 0.0695407 0.245439 0.260268 0.339394 0.0667787 -0.20033 -0.0583897 0.299598 0.19662 0.259405 -0.0488287 0.218561 0.0436309'/>
+  </keyframe>
+
+  <option>
+    <flag constraint="enable"/>
+  </option>
+
+  <default class="main">
+    <joint type="hinge" limited="true" solimplimit="0 0.99 0.01" stiffness="0.1" armature=".1e-3" damping=".01" range="-180 180"/>
+    <geom size="0.03 .01 0" conaffinity="1" condim="3" friction="0.7 0.005 0.0001" solref="0.015 1" solimp="0.99 0.99 0.003"/>
+    <general ctrllimited="true" ctrlrange="-1 1"/>
+    <default class="rodent">
+      <geom type="capsule" material="self" group="2" size=".001 .001"/>
+    </default>
+    <default class="mocap">
+      <tendon rgba="0.5 0.5 0.5 0.5" width="0.0005" limited="false" solimplimit="1 5 0.005 0.1 1" solreflimit="0.02 1" springlength="0.00001" stiffness="100" range="0 0.05" frictionloss="10000" damping="1"/>
+    </default>
+  </default>
+
+  <tendon>
+		<spatial name="HeadFT" class="mocap">
+      <site site="HeadF"/> <site site="Skull1"/>
+    </spatial>
+    <spatial name="HeadLT" class="mocap">
+      <site site="HeadL"/> <site site="Skull2"/>
+    </spatial>
+    <spatial name="HeadBT" class="mocap">
+      <site site="HeadB"/> <site site="Skull3"/>
+    </spatial>
+    <spatial name="SpineFT" class="mocap">
+      <site site="SpineF"/> <site site="FSpine"/>
+    </spatial>
+    <spatial name="SpineMT" class="mocap">
+      <site site="SpineM"/> <site site="MSpine"/>
+    </spatial>
+    <spatial name="SpineLT" class="mocap">
+      <site site="SpineL"/> <site site="SpineR"/>
+    </spatial>
+    <!-- <spatial name="Offset1T" class="mocap">
+      <site site="Offset1"/> <site site="Skull1"/>
+    </spatial>
+    <spatial name="Offset2T" class="mocap">
+      <site site="Offset2"/> <site site="Skull1"/>
+    </spatial> -->
+    <spatial name="HipLT" class="mocap">
+      <site site="HipL"/> <site site="LHip"/>
+    </spatial>
+    <spatial name="HipRT" class="mocap">
+      <site site="HipR"/> <site site="RHip"/>
+    </spatial>
+    <spatial name="ElbowLT" class="mocap">
+      <site site="ElbowL"/> <site site="LHumerus"/>
+    </spatial>
+    <spatial name="ArmLT" class="mocap">
+      <site site="ArmL"/> <site site="LArm"/>
+    </spatial>
+    <spatial name="ShoulderLT" class="mocap">
+      <site site="ShoulderL"/> <site site="LScap"/>
+    </spatial>
+    <!-- <spatial name="ShoulderL2T" class="mocap">
+      <site site="ShoulderL"/> <site site="LScap_2"/>
+    </spatial> -->
+    <spatial name="ShoulderRT" class="mocap">
+      <site site="ShoulderR"/> <site site="RScap"/>
+    </spatial>
+    <!-- <spatial name="ShoulderR2T" class="mocap">
+      <site site="ShoulderR"/> <site site="RScap_2"/>
+    </spatial> -->
+    <spatial name="ElbowRT" class="mocap">
+      <site site="ElbowR"/> <site site="RHumerus"/>
+    </spatial>
+    <spatial name="ArmRT" class="mocap">
+      <site site="ArmR"/> <site site="RArm"/>
+    </spatial>
+    <spatial name="KneeRT" class="mocap">
+      <site site="KneeR"/> <site site="RFemur"/>
+    </spatial>
+    <spatial name="KneeLT" class="mocap">
+      <site site="KneeL"/> <site site="LFemur"/>
+    </spatial>
+    <spatial name="ShinLT" class="mocap">
+      <site site="ShinL"/> <site site="LShin"/>
+    </spatial>
+    <spatial name="ShinRT" class="mocap">
+      <site site="ShinR"/> <site site="RShin"/>
+    </spatial>
+	</tendon>
+
+  <worldbody>
+    <light name="tracking_light" pos="0 0 7" dir="0 0 -1" mode="trackcom"/>
+    <camera name="back" pos="0 3 1.4" xyaxes="-1 0 0 0 -1 2" mode="trackcom"/>
+    <camera name="side" pos="-3 0 1.4" xyaxes="0 -1 0 1 0 2" mode="trackcom"/>
+    <camera name="front_side" pos="-0.2 -0.25 0.15" xyaxes="0.5 -0.5 0 0.1 0.1 1"  mode="trackcom"/>
+    <geom name="floor" type="plane" size="1 1 .1" material="grid"/>
+
+    <body name="HeadF" mocap="true" pos="0.0889786541697217	-0.0230018299309882	0.0476424388885498">
+      <site name="HeadF" type="sphere" size="0.001" pos="0 0 0" rgba="0 0 1 1"/>
+    </body>
+    <body name="HeadB" mocap="true" pos="0.0781558094744516	-0.0226266733980749	0.0615893306732178">
+      <site name="HeadB" type="sphere" size="0.001" pos="0 0 0" rgba="0 0 1 1"/>
+    </body>
+    <body name="HeadL" mocap="true" pos="0.0840681829491366	0.00535135276388726	0.0672620410919189">
+      <site name="HeadL" type="sphere" size="0.001" pos="0 0 0" rgba="0 0 1 1"/>
+    </body>
+    <body name="SpineF" mocap="true" pos="0.0336108354923585	-2.78810073398781e-09	0.0577284069061279">
+      <site name="SpineF" type="sphere" size="0.001" pos="0 0 0" rgba="1 0 0 1"/>
+    </body>
+    <body name="SpineM" mocap="true" pos="0	0	0.0772419834136963">
+      <site name="SpineM" type="sphere" size="0.001" pos="0 0 0" rgba="1 0 0 1"/>
+    </body>
+    <body name="SpineL" mocap="true" pos="-0.0530881705114818	0.00437902504728756	0.0583622074127197">
+      <site name="SpineL" type="sphere" size="0.001" pos="0 0 0" rgba="1 0 0 1"/>
+    </body>
+    <body name="Offset1" mocap="true" pos="0.0166139193266304	0.0232478826248549	0.0634551258087158">
+      <site name="Offset1" type="sphere" size="0.001" pos="0 0 0" rgba="0.75 0 0.5 1"/>
+    </body>
+    <body name="Offset2" mocap="true" pos="-0.0203860386158416	0.0284315698439373	0.0695728626251221">
+      <site name="Offset2" type="sphere" size="0.001" pos="0 0 0" rgba="0.75 0 0.5 1"/>
+    </body>
+    <body name="HipL" mocap="true" pos="-0.0574960044850230	0.0256309102518966	0.0438745822906494">
+      <site name="HipL" type="sphere" size="0.001" pos="0 0 0" rgba="0 0.75 0.75 1"/>
+    </body>
+    <body name="HipR" mocap="true" pos="-0.0481657994989117	-0.0189056833780880	0.0317840766906738">
+      <site name="HipR" type="sphere" size="0.001" pos="0 0 0" rgba="0 1 0 1"/>
+    </body>
+    <body name="ElbowL" mocap="true" pos="0.0338847205799275	0.0229856683692743	0.00463577902317047">
+      <site name="ElbowL" type="sphere" size="0.001" pos="0 0 0" rgba="1 0.75 0 1"/>
+    </body>
+    <body name="ArmL" mocap="true" pos="0.0377576429088255	0.0218747934639910	0.00164912891387939">
+      <site name="ArmL" type="sphere" size="0.001" pos="0 0 0" rgba="1 0.75 0 1"/>
+    </body>
+    <body name="ShoulderL" mocap="true" pos="0.0347763772824717	0.0205949311575841	0.0521760311126709">
+      <site name="ShoulderL" type="sphere" size="0.001" pos="0 0 0" rgba="1 0.75 0 1"/>
+    </body>
+    <body name="ShoulderR" mocap="true" pos="0.0292484607001552	-0.0152202585009388	0.0414274501800537">
+      <site name="ShoulderR" type="sphere" size="0.001" pos="0 0 0" rgba="1 1 1 1"/>
+    </body>
+    <body name="ElbowR" mocap="true" pos="0.0276493569026909	-0.0134403114300899	0.00436700439453125">
+      <site name="ElbowR" type="sphere" size="0.001" pos="0 0 0" rgba="1 1 1 1"/>
+    </body>
+    <body name="ArmR" mocap="true" pos="0.0323680084494787	-0.0119576342470901	0">
+      <site name="ArmR" type="sphere" size="0.001" pos="0 0 0" rgba="1 1 1 1"/>
+    </body>
+    <body name="KneeR" mocap="true" pos="-0.0300852721940713	-0.0229741947020289	0.0240617675781250">
+      <site name="KneeR" type="sphere" size="0.001" pos="0 0 0" rgba="0 1 0 1"/>
+    </body>
+    <body name="KneeL" mocap="true" pos="-0.0392087496326259	0.0396336424951963	0.0363965797424316">
+      <site name="KneeL" type="sphere" size="0.001" pos="0 0 0" rgba="0 0.75 0.75 1"/>
+    </body>
+    <body name="ShinL" mocap="true" pos="-0.0418206697166656	0.0342867505675419	0.0147190299034119">
+      <site name="ShinL" type="sphere" size="0.001" pos="0 0 0" rgba="0 0.75 0.75 1"/>
+    </body>
+    <body name="ShinR" mocap="true" pos="-0.0289246132551527	-0.0201304947966892	0.00437880039215087">
+      <site name="ShinR" type="sphere" size="0.001" pos="0 0 0" rgba="0 1 0 1"/>
+    </body>
+
+
+    <body name="root" pos="0 0 70e-3" euler="135 90 0" childclass="rodent">
+      <freejoint name="SpineR"/>
+      <camera name="bodycam" pos="0 .3 .1" xyaxes="-1 0 0 0 1 0" fovy="80"/>
+      <body name="SpineR">
+        <body name="RFemur" pos="0 0 0" euler="-90 -30 10">
+          <joint name="RFemur_rx" axis="1 0 0"/>
+          <joint name="RFemur_ry" axis="0 1 0"/>
+          <joint name="RFemur_rz" axis="0 0 1"/>
+          <geom name="RFemur" size="1e-3 20e-3" pos="0 20e-3 0" euler="90 0 0"/>
+          <site name="RHip" size="1e-3 20e-3" pos="0 10e-3 0" euler="90 0 0"/>
+          <site name="RFemur" size="1e-3 20e-3" pos="0 40e-3 0" euler="90 0 0"/>
+          <body name="RShin" pos="0 40e-3 0" euler="10 0 -75">
+            <joint name="RShin" axis="1 0 0"/>
+            <geom name="RShin" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+            <site name="RShin" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+          </body>
+        </body>
+        <body name="LFemur" pos="0 0 0" euler="90 30 10">
+          <joint name="LFemur_rx" axis="1 0 0"/>
+          <joint name="LFemur_ry" axis="0 1 0"/>
+          <joint name="LFemur_rz" axis="0 0 1"/>
+          <geom name="LFemur" size="1e-3 20e-3" pos="0 20e-3 0" euler="90 0 0"/>
+          <site name="LFemur" size="1e-3 20e-3" pos="0 40e-3 0" euler="90 0 0"/>
+          <site name="LHip" size="1e-3 20e-3" pos="0 10e-3 0" euler="90 0 0"/>
+          <body name="LShin" pos="0 40e-3 0" euler="10 0 -75">
+            <joint name="LShin"/>
+            <geom name="LShin" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+            <site name="LShin" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+          </body>
+        </body>
+        <geom name="SpineR" size="1e-3 25e-3" pos="0 25e-3 0"  euler="90 0 0"/>
+        <site name="SpineR" size="1e-3 25e-3" pos="0 5e-3 0"  euler="90 0 0"/>
+        <body name="MSpine" pos="0 50e-3 0" euler="-180 0 135">
+          <joint name="MSpine"/>
+          <geom name="MSpine" size="1e-3 25e-3" pos="0 25e-3 0"  euler="90 0 0"/>
+          <site name="MSpine" size="1e-3 25e-3" pos="0 5e-3 0"  euler="90 0 0"/>
+          <site name="FSpine" size="1e-3 20e-3" pos="0 50e-3 0"  euler="45 0 0"/>
+          <body name="FSpine" pos="0 50e-3 0" euler="-90 -90 90">
+            <joint name="FSpine_rx" axis="1 0 0"/>
+            <joint name="FSpine_rz" axis="0 0 1"/>
+            <geom name="FSpine" size="1e-3 20e-3" pos="0 -10e-3 10e-3"  euler="45 0 0"/>
+            <body name="Skull1" pos="0 -20e-3 20e-3" euler="10 0 0">
+              <joint name="Skull1"/>
+              <geom name="Skull1" size=".001 6e-3" pos="0 -6e-3 0" euler="90 0 0"/>
+              <site name="Skull1" size=".001 6e-3" pos="-0.024 -0.024 0.037" euler="90 0 0"/>
+            </body>
+            <body name="Skull2" pos="0 -20e-3 20e-3" euler="180 0 90">
+              <joint name="Skull2"/>
+              <geom name="Skull2" size=".001 6e-3" pos="0 -6e-3 0" euler="90 0 0"/>
+              <site name="Skull2" size=".001 6e-3" pos="0 -0.013 -0.037" euler="90 0 0"/>
+            </body>
+            <body name="Skull3" pos="0 -20e-3 20e-3" euler="0 0 -90">
+              <joint name="Skull3"/>
+              <geom name="Skull3" size=".001 6e-3" pos="0 -6e-3 0" euler="90 0 0"/>
+              <site name="Skull3" size=".001 6e-3" pos="0 -0.024 0.037" euler="90 0 0"/>
+            </body>
+          </body>
+          <body name="LScap" pos="0 50e-3 0" euler="90 -30 -90">
+            <joint name="LScap"/>
+            <geom name="LScap" size=".001 13e-3" pos="13e-3 0 0" euler="90 90 0"/>
+            <site name="LScap" size=".001 13e-3" pos="26e-3 0 0" euler="90 90 0"/>
+            <body name="LScap_2" pos="26e-3 0 0" euler="20 -60 70">
+              <joint name="LScap_2"/>
+              <geom name="LScap_2" size=".001 7e-3" pos="0 7e-3 0" euler="90 0 0"/>
+              <!-- <site name="LScap_2" size=".001 7e-3" pos="0 7e-3 0" euler="90 0 0"/> -->
+              <body name="LHumerus" pos="0 14e-3 0" euler="0 20 -90">
+                <joint name="LHumerus_rz" axis="0 0 1"/>
+                <joint name="LHumerus_ry" axis="0 1 0"/>
+                <joint name="LHumerus_rx" axis="1 0 0"/>
+                <geom name="LHumerus" size=".001 15e-3" pos="0 15e-3 0" euler="90 0 0"/>
+                <site name="LHumerus" size=".001 15e-3" pos="0 30e-3 0" euler="90 0 0"/>
+                <body name="LArm" pos="0 30e-3 0" euler="0 -30 -75">
+                  <joint name="LArm"/>
+                  <geom name="LArm" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+                  <site name="LArm" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+                </body>
+              </body>
+            </body>
+          </body>
+          <body name="RScap" pos="0 50e-3 0" euler="-90 30 -90">
+            <joint name="RScap"/>
+            <geom name="RScap" size=".001 13e-3" pos="13e-3 0 0" euler="90 90 0"/>
+            <site name="RScap" size=".001 13e-3" pos="26e-3 0 0" euler="90 90 0"/>
+            <body name="RScap_2" pos="26e-3 0 0" euler="-20 60 70">
+              <joint name="RScap_2"/>
+              <geom name="RScap_2" size=".001 7e-3" pos="0 7e-3 0" euler="90 0 0"/>
+              <!-- <site name="RScap_2" size=".001 7e-3" pos="0 7e-3 0" euler="90 0 0"/> -->
+              <body name="RHumerus" pos="0 14e-3 0" euler="0 -20 -90">
+                <joint name="RHumerus_rz" axis="0 0 1"/>
+                <joint name="RHumerus_ry" axis="0 1 0"/>
+                <joint name="RHumerus_rx" axis="1 0 0"/>
+                <geom name="RHumerus" size=".001 15e-3" pos="0 15e-3 0" euler="90 0 0"/>
+                <site name="RHumerus" size=".001 15e-3" pos="0 30e-3 0" euler="90 0 0"/>
+                <body name="RArm" pos="0 30e-3 0" euler="0 30 -75">
+                  <joint name="RArm"/>
+                  <geom name="RArm" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+                  <site name="RArm" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+  </actuator>
+
+  <sensor>
+  </sensor>
+
+</mujoco>

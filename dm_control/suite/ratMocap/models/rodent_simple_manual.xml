@@ -1,0 +1,120 @@
+<mujoco model="simple_rodent">
+  <include file="./common/skybox.xml"/>
+  <include file="./common/visual.xml"/>
+  <include file="./common/materials.xml"/>
+
+  <compiler angle="degree"/>
+
+  <visual>
+    <global offheight='1000' offwidth='1000'/>
+  </visual>
+
+  <default>
+    <joint type="hinge" limited="true" solimplimit="0 0.99 0.01" stiffness="0.1e-3" armature=".1e-3" damping=".01e-3" range="-180 180"/>
+    <geom size="0.03 .01 0" condim="3" friction="0.7 0.005 0.0001" solref="0.015 1" solimp="0.99 0.99 0.003"/>
+    <general ctrllimited="true" ctrlrange="-1 1"/>
+    <default class="rodent">
+      <geom type="capsule" material="self" group="2" size=".001 .001"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <light name="tracking_light" pos="0 0 7" dir="0 0 -1" mode="trackcom"/>
+    <camera name="back" pos="0 3 1.4" xyaxes="-1 0 0 0 -1 2" mode="trackcom"/>
+    <camera name="side" pos="-3 0 1.4" xyaxes="0 -1 0 1 0 2" mode="trackcom"/>
+    <camera name="front_side" pos="-0.2 -0.25 0.15" xyaxes="0.5 -0.5 0 0.1 0.1 1"  mode="trackcom"/>
+    <geom name="floor" type="plane" size="1 1 .1" material="grid"/>
+
+    <body name="root" pos="0 0 70e-3" euler="135 90 0" childclass="rodent">
+      <freejoint name="SpineR"/>
+      <camera name="bodycam" pos="0 .3 .1" xyaxes="-1 0 0 0 1 0" fovy="80"/>
+      <body name="SpineR">
+        <body name="RFemur" pos="0 0 0" euler="-90 -30 10">
+          <joint name="RFemur_rx" axis="1 0 0"/>
+          <joint name="RFemur_ry" axis="0 1 0"/>
+          <joint name="RFemur_rz" axis="0 0 1"/>
+          <geom name="RFemur" size="1e-3 20e-3" pos="0 20e-3 0" euler="90 0 0"/>
+          <body name="RShin" pos="0 40e-3 0" euler="10 0 -75">
+            <joint name="RShin" axis="1 0 0"/>
+            <geom name="RShin" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+          </body>
+        </body>
+        <body name="LFemur" pos="0 0 0" euler="90 30 10">
+          <joint name="LFemur_rx" axis="1 0 0"/>
+          <joint name="LFemur_ry" axis="0 1 0"/>
+          <joint name="LFemur_rz" axis="0 0 1"/>
+          <geom name="LFemur" size="1e-3 20e-3" pos="0 20e-3 0" euler="90 0 0"/>
+          <body name="LShin" pos="0 40e-3 0" euler="10 0 -75">
+            <joint name="LShin"/>
+            <geom name="LShin" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+          </body>
+        </body>
+        <geom name="SpineR" size="1e-3 25e-3" pos="0 25e-3 0"  euler="90 0 0"/>
+        <body name="MSpine" pos="0 50e-3 0" euler="-180 0 135">
+          <joint name="MSpine"/>
+          <geom name="MSpine" size="1e-3 25e-3" pos="0 25e-3 0"  euler="90 0 0"/>
+          <body name="FSpine" pos="0 50e-3 0" euler="-90 -90 90">
+            <joint name="FSpine_rx" axis="1 0 0"/>
+            <joint name="FSpine_rz" axis="0 0 1"/>
+            <geom name="FSpine" size="1e-3 20e-3" pos="0 -10e-3 10e-3"  euler="45 0 0"/>
+            <body name="Skull1" pos="0 -20e-3 20e-3" euler="10 0 0">
+              <joint name="Skull1"/>
+              <geom name="Skull1" size=".001 6e-3" pos="0 -6e-3 0" euler="90 0 0"/>
+            </body>
+            <body name="Skull2" pos="0 -20e-3 20e-3" euler="180 0 90">
+              <joint name="Skull2"/>
+              <geom name="Skull2" size=".001 6e-3" pos="0 -6e-3 0" euler="90 0 0"/>
+            </body>
+            <body name="Skull3" pos="0 -20e-3 20e-3" euler="0 0 -90">
+              <joint name="Skull3"/>
+              <geom name="Skull3" size=".001 6e-3" pos="0 -6e-3 0" euler="90 0 0"/>
+            </body>
+          </body>
+          <body name="LScap" pos="0 50e-3 0" euler="90 -30 -90">
+            <joint name="LScap"/>
+            <geom name="LScap" size=".001 13e-3" pos="13e-3 0 0" euler="90 90 0"/>
+            <body name="LScap_2" pos="26e-3 0 0" euler="20 -60 70">
+              <joint name="LScap_2"/>
+              <geom name="LScap_2" size=".001 7e-3" pos="0 7e-3 0" euler="90 0 0"/>
+              <body name="LHumerus" pos="0 14e-3 0" euler="0 20 -90">
+                <joint name="LHumerus_rz" axis="0 0 1"/>
+                <joint name="LHumerus_ry" axis="0 1 0"/>
+                <joint name="LHumerus_rx" axis="1 0 0"/>
+                <geom name="LHumerus" size=".001 15e-3" pos="0 15e-3 0" euler="90 0 0"/>
+                <body name="LArm" pos="0 30e-3 0" euler="0 -30 -75">
+                  <joint name="LArm"/>
+                  <geom name="LArm" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+                </body>
+              </body>
+            </body>
+          </body>
+          <body name="RScap" pos="0 50e-3 0" euler="-90 30 -90">
+            <joint name="RScap"/>
+            <geom name="RScap" size=".001 13e-3" pos="13e-3 0 0" euler="90 90 0"/>
+            <body name="RScap_2" pos="26e-3 0 0" euler="-20 60 70">
+              <joint name="RScap_2"/>
+              <geom name="RScap_2" size=".001 7e-3" pos="0 7e-3 0" euler="90 0 0"/>
+              <body name="RHumerus" pos="0 14e-3 0" euler="0 -20 -90">
+                <joint name="RHumerus_rz" axis="0 0 1"/>
+                <joint name="RHumerus_ry" axis="0 1 0"/>
+                <joint name="RHumerus_rx" axis="1 0 0"/>
+                <geom name="RHumerus" size=".001 15e-3" pos="0 15e-3 0" euler="90 0 0"/>
+                <body name="RArm" pos="0 30e-3 0" euler="0 30 -75">
+                  <joint name="RArm"/>
+                  <geom name="RArm" pos="0 -12e-3 0" size=".001 12e-3" euler="90 0 0"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+  </actuator>
+
+  <sensor>
+  </sensor>
+
+</mujoco>

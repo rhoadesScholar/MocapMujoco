@@ -1,0 +1,6 @@
+Tue Jan  8 16:14:53 2019
+ERROR: Could not open activation key file mjkey.txt
+
+Wed Jan  9 14:55:10 2019
+ERROR: Could not open activation key file mjkey.txt
+
